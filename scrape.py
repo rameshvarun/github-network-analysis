@@ -7,11 +7,19 @@ import requests_cache
 from github import Github
 
 
-def insert_named_user(conn, gh_user):
+def insert_user(conn, user):
     c = conn.cursor()
     c.execute(
-        "INSERT OR IGNORE INTO USERS VALUES (?, ?, ?, ?, ?)",
-        (gh_user.login, gh_user.name, gh_user.company, gh_user.location, False),
+        "INSERT OR IGNORE INTO USERS VALUES (?, ?, ?, ?, ?, ?, ?)",
+        (
+            user.login,
+            user.name,
+            user.company,
+            user.location,
+            user.followers,
+            user.type,
+            False,
+        ),
     )
     conn.commit()
 
@@ -41,15 +49,6 @@ def insert_repo(conn, repo):
     conn.commit()
 
 
-def insert_org(conn, org):
-    c = conn.cursor()
-    c.execute(
-        "INSERT OR IGNORE INTO ORGS VALUES (?, ?, ?)",
-        (org.login, org.name, org.location),
-    )
-    conn.commit()
-
-
 def insert_member(conn, user, org):
     c = conn.cursor()
     c.execute("INSERT OR IGNORE INTO MEMBER VALUES (?, ?)", (user.login, org.login))
@@ -60,6 +59,18 @@ def mark_as_scanned(conn, gh_user):
     c = conn.cursor()
     c.execute("UPDATE USERS SET scanned = 1 WHERE login = ?", (gh_user.login,))
     conn.commit()
+
+
+def get_unscanned_users(conn):
+    return [
+        row[0]
+        for row in c.execute(
+            """SELECT login FROM USERS
+               WHERE scanned = 0 AND type = 'User'
+               ORDER BY followers DESC
+               LIMIT 5"""
+        ).fetchall()
+    ]
 
 
 if __name__ == "__main__":
@@ -76,31 +87,26 @@ if __name__ == "__main__":
             c.execute(command)
         conn.commit()
 
-        insert_named_user(conn, gh.get_user("rameshvarun"))
+        insert_user(conn, gh.get_user("nat"))
 
     while True:
-        unscanned = [
-            row[0]
-            for row in c.execute("SELECT login FROM USERS WHERE scanned = 0").fetchall()
-        ]
-
-        for user in unscanned:
+        for user in get_unscanned_users(conn):
             print(f"Scanning user {user}...")
             gh_user = gh.get_user(user)
 
             print("> Organizations...")
             for org in gh_user.get_orgs():
-                insert_org(conn, org)
+                insert_user(conn, org)
                 insert_member(conn, gh_user, org)
 
             print("> Followers...")
             for follower in gh_user.get_followers():
-                insert_named_user(conn, follower)
+                insert_user(conn, follower)
                 insert_follow(conn, follower, gh_user)
 
             print("> Following...")
             for followee in gh_user.get_following():
-                insert_named_user(conn, followee)
+                insert_user(conn, followee)
                 insert_follow(conn, gh_user, followee)
 
             print("> Repos...")
@@ -109,7 +115,7 @@ if __name__ == "__main__":
 
             print("> Stars...")
             for repo in gh_user.get_starred():
-                insert_named_user(conn, repo.owner)
+                insert_user(conn, repo.owner)
                 insert_repo(conn, repo)
                 insert_star(conn, gh_user, repo)
 

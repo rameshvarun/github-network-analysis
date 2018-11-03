@@ -5,16 +5,12 @@ CREATE TABLE USERS (
     name TEXT,
     company TEXT,
     location TEXT,
+    followers INTEGER,
+    type TEXT,
     scanned BOOLEAN,
     PRIMARY KEY (login)
 );
 
-CREATE TABLE ORGS (
-    login TEXT,
-    name TEXT,
-    location TEXT,
-    PRIMARY KEY (login)
-);
 
 CREATE TABLE REPOS (
     owner TEXT,
@@ -46,6 +42,6 @@ CREATE TABLE MEMBER (
     user TEXT,
     org TEXT,
     FOREIGN KEY(user) REFERENCES USERS(login),
-    FOREIGN KEY(org) REFERENCES ORGS(login),
+    FOREIGN KEY(org) REFERENCES USERS(login),
     PRIMARY KEY (user, org)
 );
