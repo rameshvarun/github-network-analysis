@@ -5,6 +5,7 @@ name = "pypi"
 
 [packages]
 fastavro = "*"
+networkx = "*"
 
 [dev-packages]
 

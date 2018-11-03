@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "2407ee3ebf6baf95526fcd14161628d67c2759a0c6a11524d1a289d562d98899"
+            "sha256": "9a91e70d1876e3d91a2388b7548595c8cd601a3f72a9b2585bb8468c9d8a7fbe"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -16,6 +16,13 @@
         ]
     },
     "default": {
+        "decorator": {
+            "hashes": [
+                "sha256:2c51dff8ef3c447388fe5e4453d24a2bf128d3a4c32af3fabef1f01c6851ab82",
+                "sha256:c39efa13fbdeb4506c476c9b3babf6a718da943dab7811c206005a4a956c080c"
+            ],
+            "version": "==4.3.0"
+        },
         "fastavro": {
             "hashes": [
                 "sha256:085ae538838d2d7aec0bf331956724ba42e27d4a664b4a019d8c2f629a10ca1e",
@@ -37,6 +44,13 @@
             ],
             "index": "pypi",
             "version": "==0.21.12"
+        },
+        "networkx": {
+            "hashes": [
+                "sha256:45e56f7ab6fe81652fb4bc9f44faddb0e9025f469f602df14e3b2551c2ea5c8b"
+            ],
+            "index": "pypi",
+            "version": "==2.2"
         }
     },
     "develop": {}
