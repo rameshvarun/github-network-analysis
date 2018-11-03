@@ -58,7 +58,7 @@ def insert_member(conn, user, org):
 
 def mark_as_scanned(conn, gh_user):
     c = conn.cursor()
-    c.execute("UPDATE USERS SET scanned = TRUE WHERE login = ?", (gh_user.login,))
+    c.execute("UPDATE USERS SET scanned = 1 WHERE login = ?", (gh_user.login,))
     conn.commit()
 
 
