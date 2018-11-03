@@ -41,3 +41,11 @@ CREATE TABLE STAR (
     FOREIGN KEY(repo_owner, repo_name) REFERENCES REPOS(owner, name),
     PRIMARY KEY (user, repo_owner, repo_name)
 );
+
+CREATE TABLE MEMBER (
+    user TEXT,
+    org TEXT,
+    FOREIGN KEY(user) REFERENCES USERS(login),
+    FOREIGN KEY(org) REFERENCES ORGS(login),
+    PRIMARY KEY (user, org)
+);

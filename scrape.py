@@ -2,6 +2,7 @@
 
 import os
 import sqlite3
+import requests_cache
 
 from github import Github
 
@@ -40,13 +41,29 @@ def insert_repo(conn, repo):
     conn.commit()
 
 
+def insert_org(conn, org):
+    c = conn.cursor()
+    c.execute(
+        "INSERT OR IGNORE INTO ORGS VALUES (?, ?, ?)",
+        (org.login, org.name, org.location),
+    )
+    conn.commit()
+
+
+def insert_member(conn, user, org):
+    c = conn.cursor()
+    c.execute("INSERT OR IGNORE INTO MEMBER VALUES (?, ?)", (user.login, org.login))
+    conn.commit()
+
+
 def mark_as_scanned(conn, gh_user):
     c = conn.cursor()
-    c.execute("UPDATE USERS SET scanned = TRUE WHERE login = ?", gh_user.login)
+    c.execute("UPDATE USERS SET scanned = TRUE WHERE login = ?", (gh_user.login,))
     conn.commit()
 
 
 if __name__ == "__main__":
+    requests_cache.install_cache("requests-cache", expire_after=5 * 60)
     gh = Github(os.environ["GITHUB_OAUTH_TOKEN"])
 
     initialize = not os.path.isfile("data.db")
@@ -68,23 +85,33 @@ if __name__ == "__main__":
         ]
 
         for user in unscanned:
+            print(f"Scanning user {user}...")
             gh_user = gh.get_user(user)
 
+            print("> Organizations...")
+            for org in gh_user.get_orgs():
+                insert_org(conn, org)
+                insert_member(conn, gh_user, org)
+
+            print("> Followers...")
             for follower in gh_user.get_followers():
                 insert_named_user(conn, follower)
                 insert_follow(conn, follower, gh_user)
 
+            print("> Following...")
             for followee in gh_user.get_following():
                 insert_named_user(conn, followee)
                 insert_follow(conn, gh_user, followee)
 
+            print("> Repos...")
             for repo in gh_user.get_repos():
                 insert_repo(conn, repo)
 
+            print("> Stars...")
             for repo in gh_user.get_starred():
                 insert_named_user(conn, repo.owner)
                 insert_repo(conn, repo)
                 insert_star(conn, gh_user, repo)
 
             mark_as_scanned(conn, gh_user)
-            sys.exit()
+            requests_cache.core.remove_expired_responses()
