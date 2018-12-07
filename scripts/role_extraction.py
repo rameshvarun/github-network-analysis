@@ -2,6 +2,11 @@ import snap
 import numpy as np
 import matplotlib.pyplot as plt
 import operator
+from sklearn.cluster import KMeans
+from sklearn.decomposition import PCA
+
+# Seed
+Rnd = snap.TRnd(42)
 
 # Helper to compute all the features
 def getFeatureVecBasic(G, nid):
@@ -9,12 +14,12 @@ def getFeatureVecBasic(G, nid):
 	feat1 = node.GetDeg()
 
 	# Now get egonet
-	ego = snap.TUNGraph()
+	ego = snap.TNGraph()
 	ego.AddNode(node.GetId())
 
 	# Add all of the neighbors and edge to node
 	Nbrs = snap.TIntV()
-	snap.GetCmnNbrs(G, nid, nid, Nbrs)
+	snap.GetNodesAtHop(G, nid, 1, Nbrs, True)
 	Nbrs.Add(nid)
 	feat2, feat3 = snap.GetEdgesInOut(G, Nbrs)
 	
@@ -38,6 +43,7 @@ def q1_1():
 	print 'Basic feature vector for node 9', result1
 
 	# Find most similar
+	'''
 	sims = {}
 	for node in G.Nodes():
 		sims[node.GetId()] = cosineSim(result1, getFeatureVecBasic(G, node.GetId()))
@@ -45,24 +51,44 @@ def q1_1():
 	# Sort https://stackoverflow.com/questions/613183/how-do-i-sort-a-dictionary-by-value
 	sorted_sims = sorted(sims.items(), key=operator.itemgetter(1), reverse=True)
 	print 'Sorted by similarity', sorted_sims[:7]
+	'''
 
 # Helper to run recursive for some k on g
-def runRecursive(G, k=2):
-	dicts = [{} for i in range(k+1)]
+def runRecursive(G, testNodes, k=2):
+	dicts = [{} for i in range(k)]
+
+	# Subset
+	#print testNodes
 	
 	# Now for each iteration, we keep going
-	for i in range(k+1):
+	for i in range(k):
 		# Handle base case separately
 		if i == 0:
-			for node in G.Nodes():
-				dicts[0][node.GetId()] = getFeatureVecBasic(G, node.GetId())
+			for node in testNodes:
+				dicts[0][node] = getFeatureVecBasic(G, node)
+
+				# Also need to get all of the neighbor feature vecs
+				Nbrs = snap.TIntV()
+				snap.GetNodesAtHop(G, node, 1, Nbrs, True)
+				for nbr in Nbrs:
+					dicts[0][nbr] = getFeatureVecBasic(G, nbr)
+
+					# And for neighbors' neighbors
+					NbrsNbrs = snap.TIntV()
+					snap.GetNodesAtHop(G, nbr, 1, NbrsNbrs, True)
+					for nbrnbr in NbrsNbrs:
+						dicts[0][nbrnbr] = getFeatureVecBasic(G, nbrnbr)
+
 
 		# Otherwise, we do it the normal way
 		else:
-			for node in G.Nodes():
+			counter = 1
+			for node in testNodes:
+				print counter
+				counter += 1
 				# Get all of the neighbors of our node
 				Nbrs = snap.TIntV()
-				snap.GetCmnNbrs(G, node.GetId(), node.GetId(), Nbrs)
+				snap.GetNodesAtHop(G, node, 1, Nbrs, True)
 				sumVec = np.zeros(3**(i))
 
 				# For each neighbor, get mean and sum
@@ -77,24 +103,51 @@ def runRecursive(G, k=2):
 					meanVec = sumVec / float(len(Nbrs))
 
 				# Now concatenate
-				dicts[i][node.GetId()] = np.concatenate((dicts[i-1][node.GetId()], meanVec, sumVec))
+				dicts[i][node] = np.concatenate((dicts[i-1][node], meanVec, sumVec))
 	return dicts[-1]
 
 def q1_2():
-	G = snap.TUNGraph.Load(snap.TFIn("hw2-q1.graph"))
+	FIn = snap.TFIn("../../GithubNetworkAnalysis/results/snap-follow-pruned.graph")
+	G = snap.TNGraph.Load(FIn)
+
+	# Subset random test
+	testNodes = [G.GetRndNId(Rnd) for i in range(500)]
 
 	# Use Helper
-	last = runRecursive(G)
+	print 'Estimating features'
+	last = runRecursive(G, testNodes)
+	print last
+
+	# Now do kmeans
+	print 'Kmeans'
+	clusters = []
+	for item in last.itervalues():
+		clusters.append(item)
+
+	kmeans = KMeans(n_clusters=5, random_state=0).fit(clusters)
+	print kmeans.cluster_centers_
+
+	print 'PCA'
+	pca = PCA(n_components=2)
+	pca.fit(clusters)
+	results = pca.transform(clusters)
+	plt.scatter(results[:,0], results[:,1])
+	plt.xlabel('First Principal Component')
+	plt.ylabel('Second Principal Component')
+	plt.title('RolX Algorithm Principal Components')
+	plt.show()
 
 	# Find most similar
+	'''
 	sims = {}
 	for node in G.Nodes():
 		sims[node.GetId()] = cosineSim(last[9], last[node.GetId()])
 	sorted_sims = sorted(sims.items(), key=operator.itemgetter(1), reverse=True)
 	print 'Sorted by similarity', sorted_sims[:10]
+	'''
 
 def q1_3():
-	G = snap.TUNGraph.Load(snap.TFIn("hw2-q1.graph"))
+	G = snap.TNGraph.Load(snap.TFIn("hw2-q1.graph"))
 
 	# Use Helper
 	last = runRecursive(G)
@@ -138,8 +191,8 @@ def q1_3():
 	print vec
 
 
-q1_1()
-#q1_2()
+#q1_1()
+q1_2()
 #q1_3()
 
 
