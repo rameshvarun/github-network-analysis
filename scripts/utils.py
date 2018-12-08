@@ -2,6 +2,7 @@ import ast
 import pickle
 import os
 
+
 def count_iterator(it):
     """
     Count the number of elements in an iterator.
@@ -54,3 +55,9 @@ def jaccard_similarity(a, b):
     Calculates the Jaccard similarity of two sets.
     """
     return len(a & b) / len(a | b)
+
+@cached('results/user_id_to_login_mapping.pickle')
+def get_user_id_to_login():
+    from data import users
+    print ("Generating id->login mappings...")
+    return { user['id']: user['login'] for user in users() }

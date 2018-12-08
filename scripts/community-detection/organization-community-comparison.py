@@ -1,5 +1,4 @@
 import click
-import pickle
 
 from utils import load_communities, cached, jaccard_similarity
 from data import organization_members, users
@@ -37,4 +36,4 @@ if __name__ == "__main__":
     results.sort(reverse=True)
     for i, (best_match, org_id, org_size) in enumerate(results[:100]):
         org_name = id_to_login[org_id] if org_id in id_to_login else f"<UNKNOWN:{org_id}>"
-        print(i + 1, "&", org_name, "&", org_size, "&", "{:.2f}".format(best_match))
+        print(i + 1, "&", org_name, "&", org_size, "&", "{:.2f}".format(best_match), "\\\\")
