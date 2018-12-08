@@ -1,14 +1,11 @@
 import click
 import pickle
 
-from utils import load_communities, cached
+from utils import load_communities, cached, jaccard_similarity
 from data import organization_members, users
 from collections import defaultdict
 
 COMMUNITY_MIN_SIZE = 5
-
-def jaccard_similarity(a, b):
-    return len(a & b) / len(a | b)
 
 @cached('results/org_id_to_login_mapping.pickle')
 def get_org_id_to_login():

@@ -47,3 +47,10 @@ def cached(cachefile):
         return wrapped
 
     return decorator  # return this "customized" decorator that uses "cachefile"
+
+
+def jaccard_similarity(a, b):
+    """
+    Calculates the Jaccard similarity of two sets.
+    """
+    return len(a & b) / len(a | b)
