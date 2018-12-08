@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+
 from utils import load_communities
 import numpy as np
 import matplotlib.pyplot as plt
