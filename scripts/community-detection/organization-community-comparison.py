@@ -1,15 +1,11 @@
+#!/usr/bin/env python3
 import click
 
-from utils import load_communities, cached, jaccard_similarity
+from utils import load_communities, cached, jaccard_similarity, get_org_id_to_login
 from data import organization_members, users
 from collections import defaultdict
 
 COMMUNITY_MIN_SIZE = 5
-
-@cached('results/org_id_to_login_mapping.pickle')
-def get_org_id_to_login():
-    print ("Generating id->login mappings...")
-    return { user['id']: user['login'] for user in users() if user['type'] == 'ORG' }
 
 if __name__ == "__main__":
     id_to_login = get_org_id_to_login()
