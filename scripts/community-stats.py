@@ -1,12 +1,9 @@
-import ast
+from utils import load_communities
 import numpy as np
 import matplotlib.pyplot as plt
 
 if __name__ == "__main__":
-    communities = []
-    with open("results/communities.txt", "r") as file:
-        for line in file:
-            communities.append(set(ast.literal_eval(line)))
+    communities = load_communities("results/communities.txt")
 
     print("Number of communities:", len(communities))
 

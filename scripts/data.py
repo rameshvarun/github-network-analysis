@@ -14,6 +14,11 @@ def users():
             for record in reader(file):
                 yield record
 
+def organization_members():
+    for orgfile in ["data/organization_members.avro"]:
+        with open(orgfile, "rb") as file:
+            for record in reader(file):
+                yield record
 
 def watchers():
     for watcherfile in [
@@ -35,11 +40,14 @@ def watchers():
 
 
 if __name__ == "__main__":
-    # print("Counting users...")
-    # print("Number of users:", count_iterator(users()))
-    #
-    # print("Counting follows...")
-    # print("Number of follows:", count_iterator(followers()))
+    print("Counting users...")
+    print("Number of users:", count_iterator(users()))
+
+    print("Counting follows...")
+    print("Number of follows:", count_iterator(followers()))
 
     print("Counting watchers...")
     print("Number of watchers:", count_iterator(watchers()))
+
+    print("Couting orgs...")
+    print("Number of organization members:", count_iterator(organization_members()))
