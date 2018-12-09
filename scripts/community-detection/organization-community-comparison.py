@@ -1,16 +1,22 @@
 #!/usr/bin/env python3
+import os
+import sys
 import click
+from collections import defaultdict
+
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), os.pardir))
 
 from utils import load_communities, cached, jaccard_similarity, get_org_id_to_login
 from data import organization_members, users
-from collections import defaultdict
 
 COMMUNITY_MIN_SIZE = 5
 
-if __name__ == "__main__":
+@click.command()
+@click.argument('input', type=click.Path())
+def organization_community_comparison(input):
     id_to_login = get_org_id_to_login()
 
-    communities = [c for c in load_communities("results/communities.txt") if len(c) >= COMMUNITY_MIN_SIZE]
+    communities = [c for c in load_communities(input) if len(c) >= COMMUNITY_MIN_SIZE]
     print("Number of communities:", len(communities))
 
     organizations = defaultdict(set)
@@ -33,3 +39,6 @@ if __name__ == "__main__":
     for i, (best_match, org_id, org_size) in enumerate(results[:100]):
         org_name = id_to_login[org_id] if org_id in id_to_login else f"<UNKNOWN:{org_id}>"
         print(i + 1, "&", org_name, "&", org_size, "&", "{:.2f}".format(best_match), "\\\\")
+
+if __name__ == "__main__":
+    organization_community_comparison()

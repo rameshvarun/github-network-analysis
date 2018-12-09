@@ -67,5 +67,6 @@ def get_user_id_to_login():
 
 @cached('results/org_id_to_login_mapping.pickle')
 def get_org_id_to_login():
+    from data import users
     print ("Generating id->login mappings...")
     return { user['id']: user['login'] for user in users() if user['type'] == 'ORG' }
