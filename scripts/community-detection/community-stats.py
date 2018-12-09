@@ -3,13 +3,12 @@
 import os
 import sys
 import click
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), os.pardir))
-
-from utils import load_communities
 import numpy as np
 import matplotlib.pyplot as plt
 
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), os.pardir))
 
+from utils import load_communities
 
 @click.command()
 @click.argument('input', type=click.Path())

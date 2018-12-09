@@ -32,12 +32,15 @@ def get_user_to_location():
     print("Generating user to location mapping...")
     return { user['id']: user['location'] for user in users() if user['location'] != None }
 
-if __name__ == "__main__":
+@click.command()
+@click.argument('communities_file', type=click.Path())
+@click.argument('graph_title', type=str)
+def homogeneity_analysis(communities_file, graph_title):
     user_to_orgs = get_user_to_orgs()
     user_to_company = get_user_to_company()
     user_to_location = get_user_to_location()
 
-    communities = [c for c in load_communities("results/communities.txt") if len(c) >= COMMUNITY_MIN_SIZE]
+    communities = [c for c in load_communities(communities_file) if len(c) >= COMMUNITY_MIN_SIZE]
     print("Number of communities:", len(communities))
 
     org_homogeneities = []
@@ -69,7 +72,7 @@ if __name__ == "__main__":
                 location_homogeneities.append(location_homogeneity)
 
     fig, (ax1, ax2, ax3) = plt.subplots(3, 1, sharex=True)
-    fig.suptitle("Community Homogeneity")
+    fig.suptitle(graph_title)
 
     ax1.hist(org_homogeneities, log=True)
     ax1.set_xlabel('Org. Homogeneity')
@@ -84,3 +87,6 @@ if __name__ == "__main__":
     ax3.set_ylabel('Frequency')
 
     plt.show()
+
+if __name__ == "__main__":
+    homogeneity_analysis()
