@@ -19,7 +19,8 @@ def page_rank(input):
     snap.GetPageRank(graph, PRankH)
 
     scores = sorted([(PRankH[item], item) for item in PRankH], reverse=True)[:100]
-    print([(id_to_login[id], score) for score, id in scores])
+    for i, (score, id) in enumerate(scores):
+        print(i + 1, "&", id_to_login[id], "&", score, "\\\\")
 
 if __name__ == "__main__":
     page_rank()

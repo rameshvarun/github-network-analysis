@@ -26,6 +26,9 @@ def cached(cachefile):
     A function that creates a decorator which will use "cachefile" for caching
     the results of the decorated function "fn".
     """
+    
+    protocol = pickle.HIGHEST_PROTOCOL
+    cachefile = cachefile  + '.' + str(protocol)
 
     def decorator(fn):  # define a decorator for a function "fn"
         def wrapped(
@@ -41,7 +44,7 @@ def cached(cachefile):
 
             # write to cache file
             with open(cachefile, "wb") as cachehandle:
-                pickle.dump(res, cachehandle)
+                pickle.dump(res, cachehandle, protocol=protocol)
 
             return res
 
