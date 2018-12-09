@@ -20,7 +20,7 @@ def page_rank(input):
 
     scores = sorted([(PRankH[item], item) for item in PRankH], reverse=True)[:100]
     for i, (score, id) in enumerate(scores):
-        print(i + 1, "&", id_to_login[id], "&", score, "\\\\")
+        print(i + 1, "&", id_to_login[id], "&", "{:.2f}".format(score * 4), "\\\\")
 
 if __name__ == "__main__":
     page_rank()
