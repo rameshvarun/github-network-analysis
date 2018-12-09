@@ -1,11 +1,21 @@
 #!/usr/bin/env python3
 
+import os
+import sys
+import click
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), os.pardir))
+
 from utils import load_communities
 import numpy as np
 import matplotlib.pyplot as plt
 
-if __name__ == "__main__":
-    communities = load_communities("results/communities.txt")
+
+
+@click.command()
+@click.argument('input', type=click.Path())
+@click.argument('title', type=str)
+def community_stats(input, title):
+    communities = load_communities(input)
 
     print("Number of communities:", len(communities))
 
@@ -16,5 +26,8 @@ if __name__ == "__main__":
     plt.hist(lengths, log=True)
     plt.xlabel('Size of Community')
     plt.ylabel('Frequency')
-    plt.title("Leiden Algorithm Community Detection")
+    plt.title(title)
     plt.show()
+
+if __name__ == "__main__":
+    community_stats()
