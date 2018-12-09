@@ -1,9 +1,13 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python2
 import snap
+import click
 
-if __name__ == "__main__":
+@click.command()
+@click.argument('input', type=click.Path())
+@click.argument('output', type=click.Path())
+def community_detection(input, output):
     print("Loading graph...")
-    FIn = snap.TFIn("results/snap-follow.graph")
+    FIn = snap.TFIn(input)
     graph = snap.TNGraph.Load(FIn)
 
     ugraph = snap.ConvertGraph(snap.PUNGraph, graph)
@@ -13,7 +17,10 @@ if __name__ == "__main__":
     modularity = snap.CommunityCNM(ugraph, CmtyV)
     print("Modularity:", modularity)
 
-    with open("results/communities.txt", "w") as file:
+    with open(output, "w") as file:
         for Cmty in CmtyV:
             file.write(repr([NI for NI in Cmty]))
             file.write("\n")
+
+if __name__ == "__main__":
+    community_detection()
