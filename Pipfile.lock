@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "b4fb3022cc47f914fc3f9a43e91ec304fd19340661b1d15d14a7c5d42e986e6e"
+            "sha256": "a07f86c21a4a31ab1634c5f9c29eedd56c680e40ffe2eabea182bc92118d33ab"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -44,6 +44,14 @@
             ],
             "index": "pypi",
             "version": "==0.21.14"
+        },
+        "leidenalg": {
+            "hashes": [
+                "sha256:c1c92c5638ef0ccf67ea89ed311cf19116a82e67bf1a015a3e65f00653a3dc95",
+                "sha256:ff05e09319f7689c382a85586c0c144c9c14366b1252f4499397d71142594fc3"
+            ],
+            "index": "pypi",
+            "version": "==0.7.0"
         },
         "networkx": {
             "hashes": [
