@@ -43,6 +43,25 @@ def pull_requests():
             for record in reader(file):
                 yield record
 
+def watchers():
+    for watcherfile in [
+        "data/watchers-000000000000.avro",
+        "data/watchers-000000000001.avro",
+        "data/watchers-000000000002.avro",
+        "data/watchers-000000000003.avro",
+        "data/watchers-000000000004.avro",
+        "data/watchers-000000000005.avro",
+        "data/watchers-000000000006.avro",
+        "data/watchers-000000000007.avro",
+        "data/watchers-000000000008.avro",
+        "data/watchers-000000000009.avro",
+        "data/watchers-000000000010.avro",
+    ]:
+        with open(watcherfile, "rb") as file:
+            for record in reader(file):
+                yield record
+
+
 if __name__ == "__main__":
     print("Counting users...")
     print("Number of users:", count_iterator(users()))
