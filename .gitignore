@@ -2,3 +2,5 @@
 /results/
 *.pyc
 __pycache__
+*.pkl
+*.graph
