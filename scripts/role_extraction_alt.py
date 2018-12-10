@@ -110,14 +110,14 @@ def runRecursive(G, testNodes, k=2):
 				dicts[i][node] = np.concatenate((dicts[i-1][node], meanVec, sumVec))
 
 		# Pickle to save
-		with open('feats_' + str(i) + '_v1.pkl', 'wb') as f:
+		with open('feats_' + str(i) + '_v1_alt.pkl', 'wb') as f:
 			pickle.dump(dicts[i], f)
 
 	return dicts[-1]
 
 def q1_2():
-	FIn = snap.TFIn("../../GithubNetworkAnalysis/results/snap-follow-pruned.graph")
-	G = snap.TNGraph.Load(FIn)
+	FIn = snap.TFIn("watchers_v1.graph")
+	G = snap.TUNGraph.Load(FIn)
 
 	# Subset random test
 	testNodes = [G.GetRndNId(Rnd) for i in range(1000)]
@@ -128,7 +128,7 @@ def q1_2():
 	print last
 
 	# Save as pickle since this takes forever
-	with open('recursive_features_v1.pkl', 'wb') as f:
+	with open('recursive_features_v1_alt.pkl', 'wb') as f:
 		pickle.dump(last, f)
 
 	# Now do kmeans
@@ -204,46 +204,13 @@ def q1_3():
 	print vec
 
 def cluster_and_PCA():
-	final_cluster_dict = None
-	with open('recursive_features_v1.pkl', 'rb') as handle:
-		final_cluster_dict = pickle.load(handle)
+	return
 
-    # Now do kmeans first on the featuers, then show pca color coded
-	print 'Kmeans'
-	clusters = []
-	for item in final_cluster_dict.itervalues():
-		clusters.append(item)
-
-	kmeans = KMeans(n_clusters=8, random_state=0).fit(clusters)
-	centers = kmeans.cluster_centers_
-	assigned_clusters = kmeans.predict(clusters)
-
-	print 'PCA'
-	pca = PCA(n_components=2)
-	pca.fit(clusters)
-	results = pca.transform(clusters)
-	plt.scatter(results[:,0], results[:,1], c=assigned_clusters)
-	plt.xlabel('First Principal Component')
-	plt.ylabel('Second Principal Component')
-	plt.title('RolX Algorithm Principal Components - Clustering on Feature Vectors')
-	plt.show()
-
-	# Now kmeans on PCA results
-	kmeans = KMeans(n_clusters=8, random_state=0).fit(results)
-	centers = kmeans.cluster_centers_
-	assigned_clusters = kmeans.predict(results)
-
-	# Plot again
-	plt.scatter(results[:,0], results[:,1], c=assigned_clusters)
-	plt.xlabel('First Principal Component')
-	plt.ylabel('Second Principal Component')
-	plt.title('RolX Algorithm Principal Components - Clustering on PCA')
-	plt.show()
 
 #q1_1()
-#q1_2()
+q1_2()
 #q1_3()
-cluster_and_PCA()
+#cluster_and_PCA()
 
 
 

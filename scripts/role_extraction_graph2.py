@@ -35,25 +35,6 @@ def cosineSim(x, y):
 		return 0
 	return np.dot(x, y) / (normx * normy)
 
-def q1_1():
-	FIn = snap.TFIn("../../GithubNetworkAnalysis/results/snap-follow-pruned.graph")
-	G = snap.TNGraph.Load(FIn)
-
-	# Run for 9
-	result1 = getFeatureVecBasic(G, 9)
-	print 'Basic feature vector for node 9', result1
-
-	# Find most similar
-	'''
-	sims = {}
-	for node in G.Nodes():
-		sims[node.GetId()] = cosineSim(result1, getFeatureVecBasic(G, node.GetId()))
-
-	# Sort https://stackoverflow.com/questions/613183/how-do-i-sort-a-dictionary-by-value
-	sorted_sims = sorted(sims.items(), key=operator.itemgetter(1), reverse=True)
-	print 'Sorted by similarity', sorted_sims[:7]
-	'''
-
 # Helper to run recursive for some k on g
 def runRecursive(G, testNodes, k=2):
 	dicts = [{} for i in range(k)]
@@ -110,13 +91,14 @@ def runRecursive(G, testNodes, k=2):
 				dicts[i][node] = np.concatenate((dicts[i-1][node], meanVec, sumVec))
 
 		# Pickle to save
-		with open('feats_' + str(i) + '_v1.pkl', 'wb') as f:
+		with open('feats_' + str(i) + '_graph2.pkl', 'wb') as f:
 			pickle.dump(dicts[i], f)
 
 	return dicts[-1]
 
-def q1_2():
-	FIn = snap.TFIn("../../GithubNetworkAnalysis/results/snap-follow-pruned.graph")
+def run_recursive_feats():
+	#FIn = snap.TFIn("../../GithubNetworkAnalysis/results/snap-follow-pruned.graph")
+	FIn = snap.TFIn("pr_v1.graph")
 	G = snap.TNGraph.Load(FIn)
 
 	# Subset random test
@@ -128,7 +110,7 @@ def q1_2():
 	print last
 
 	# Save as pickle since this takes forever
-	with open('recursive_features_v1.pkl', 'wb') as f:
+	with open('recursive_features_graph2.pkl', 'wb') as f:
 		pickle.dump(last, f)
 
 	# Now do kmeans
@@ -205,7 +187,7 @@ def q1_3():
 
 def cluster_and_PCA():
 	final_cluster_dict = None
-	with open('recursive_features_v1.pkl', 'rb') as handle:
+	with open('recursive_features_graph2.pkl', 'rb') as handle:
 		final_cluster_dict = pickle.load(handle)
 
     # Now do kmeans first on the featuers, then show pca color coded
@@ -240,9 +222,7 @@ def cluster_and_PCA():
 	plt.title('RolX Algorithm Principal Components - Clustering on PCA')
 	plt.show()
 
-#q1_1()
-#q1_2()
-#q1_3()
+run_recursive_feats()
 cluster_and_PCA()
 
 

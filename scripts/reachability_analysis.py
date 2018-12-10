@@ -48,19 +48,19 @@ plt.show()
 
 # Now do pruned
 print("Loading graph...")
-FIn = snap.TFIn("../../GithubNetworkAnalysis/results/snap-follow-pruned.graph")
+#FIn = snap.TFIn("../../GithubNetworkAnalysis/results/snap-follow-pruned.graph")
+FIn = snap.TFIn("pr_v1.graph")
 graph = snap.TNGraph.Load(FIn)
 
 # Do 100 sample points for now
-'''
 inward = []
-for i in range(100):
+for i in range(10000):
     NId = graph.GetRndNId()
     InBfsTree = snap.GetBfsTree(graph, NId, False, True)
     inward.append(InBfsTree.GetNodes())
 # sort
 inwardY = sorted(inward)
-inwardX = list(np.linspace(0,1,100,endpoint=False))
+inwardX = list(np.linspace(0,1,10000,endpoint=False))
 
 # Plot
 plt.plot(inwardX, inwardY)
@@ -69,18 +69,17 @@ plt.ylabel('Number of Nodes Reached')
 plt.title('Reachability using Inlinks - Pruned')
 plt.legend()
 plt.show()
-'''
 
 
 # Outward 
 outward = []
-for i in range(100):
+for i in range(10000):
     NId = graph.GetRndNId()
     OutBfsTree = snap.GetBfsTree(graph, NId, True, False)
     outward.append(OutBfsTree.GetNodes())
 # sort
 outwardY = sorted(outward)
-outwardX = list(np.linspace(0,1,100,endpoint=False))
+outwardX = list(np.linspace(0,1,10000,endpoint=False))
 
 # Plot
 plt.plot(outwardX, outwardY)

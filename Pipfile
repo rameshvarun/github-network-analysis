@@ -6,6 +6,9 @@ name = "pypi"
 [packages]
 fastavro = "*"
 networkx = "*"
+python-igraph = "*"
+leidenalg = "*"
+click = "*"
 
 [dev-packages]
 
